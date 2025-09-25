@@ -9,6 +9,7 @@ from congress.dependencies import get_db
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Congress App")
 
+print("Test")
 
 @app.get("/questions", response_model=list[schemas.QuestionResponse])
 def read_questions(status: str | None = None, db: Session = Depends(get_db)):
