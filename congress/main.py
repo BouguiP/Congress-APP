@@ -5,12 +5,15 @@ from congress.database import engine
 from congress.dependencies import get_db
 from sqlalchemy import and_, Date, or_
 from datetime import datetime
-
+from fastapi.staticfiles import StaticFiles
 
 
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Congress App")
+
+# Monter un dossier "static" accessible via /static/...
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/questions", response_model=list[schemas.QuestionResponse])
 def read_questions(
@@ -171,3 +174,19 @@ def get_next_session(db: Session = Depends(get_db)):
         models.Session.heure_debut > now
     ).order_by(models.Session.heure_debut).first()
     return session
+
+
+@app.get("/documents")
+def get_documents():
+    return [
+        {
+            "name": "Attestation de participation",
+            "url": "/static/attestation.pdf",
+            "type": "pdf"
+        },
+        {
+            "name": "Menu du dîner",
+            "url": "/static/menu_diner.pdf",
+            "type": "pdf"
+        }
+    ]
