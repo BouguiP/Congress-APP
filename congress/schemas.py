@@ -2,7 +2,9 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 class QuestionCreate(BaseModel):
+    session_id: int
     question_text: str
+
 
 class QuestionResponse(BaseModel):
     id: int

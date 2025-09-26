@@ -1,13 +1,22 @@
 from sqlalchemy import Column, Integer, String, Text, TIMESTAMP, func
 from .database import Base
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 class Question(Base):
     __tablename__ = "questions"
 
     id = Column(Integer, primary_key=True, index=True)
-    question_text = Column(Text, nullable=False)
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    question_text = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     status = Column(String(20), default="non_repondu")
+
+    # Relations
+    session_id = Column(Integer, ForeignKey("sessions.id"))
+    participant_id = Column(Integer, ForeignKey("participants.id"), nullable=True)
+
+    session = relationship("Session", backref="questions")
+    participant = relationship("Participant", backref="questions")
 
 class Participant(Base):
     __tablename__ = "participants"

@@ -13,7 +13,11 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Congress App")
 
 @app.get("/questions", response_model=list[schemas.QuestionResponse])
-def read_questions(status: str | None = None, db: Session = Depends(get_db)):
+def read_questions(
+        status: str | None = None,
+        session_id: int | None = None,
+        db: Session = Depends(get_db)
+):
     query = db.query(models.Question)
 
     if status:
@@ -21,12 +25,22 @@ def read_questions(status: str | None = None, db: Session = Depends(get_db)):
             raise HTTPException(status_code=400, detail="Statut invalide")
         query = query.filter(models.Question.status == status)
 
+    if session_id:
+        query = query.filter(models.Question.session_id == session_id)
+
     return query.all()
+
 
 
 @app.post("/questions", response_model=schemas.QuestionResponse)
 def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_db)):
+    # Vérifie que la session existe
+    session = db.query(models.Session).filter(models.Session.id == question.session_id).first()
+    if not session:
+        raise HTTPException(status_code=400, detail="Session inexistante")
+
     new_question = models.Question(
+        session_id=question.session_id,
         question_text=question.question_text,
         status="non_repondu"
     )
@@ -34,6 +48,7 @@ def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_
     db.commit()
     db.refresh(new_question)
     return new_question
+
 
 # Inverser le statut (PATCH)
 @app.patch("/questions/{question_id}/toggle", response_model=schemas.QuestionResponse)
