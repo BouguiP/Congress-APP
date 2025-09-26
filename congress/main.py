@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from congress import models, schemas
 from congress.database import engine
 from congress.dependencies import get_db
-from sqlalchemy import and_, Date
+from sqlalchemy import and_, Date, or_
 from datetime import datetime
+
 
 
 
@@ -76,6 +77,37 @@ def get_participant(participant_id: int, db: Session = Depends(get_db)):
 # Créer une session
 @app.post("/sessions", response_model=schemas.SessionResponse)
 def create_session(session: schemas.SessionCreate, db: Session = Depends(get_db)):
+    # Vérif 1 : heure_fin > heure_debut
+    if session.heure_fin <= session.heure_debut:
+        raise HTTPException(status_code=400, detail="L'heure de fin doit être après l'heure de début")
+
+    # Vérif 2 : chevauchement salle
+    if session.salle:
+        conflict_salle = db.query(models.Session).filter(
+            models.Session.salle == session.salle,
+            or_(
+                and_(session.heure_debut >= models.Session.heure_debut, session.heure_debut < models.Session.heure_fin),
+                and_(session.heure_fin > models.Session.heure_debut, session.heure_fin <= models.Session.heure_fin),
+                and_(session.heure_debut <= models.Session.heure_debut, session.heure_fin >= models.Session.heure_fin)
+            )
+        ).first()
+        if conflict_salle:
+            raise HTTPException(status_code=400, detail=f"Salle {session.salle} déjà occupée sur ce créneau")
+
+    # Vérif 3 : chevauchement conférencier
+    if session.conferencier:
+        conflict_conf = db.query(models.Session).filter(
+            models.Session.conferencier == session.conferencier,
+            or_(
+                and_(session.heure_debut >= models.Session.heure_debut, session.heure_debut < models.Session.heure_fin),
+                and_(session.heure_fin > models.Session.heure_debut, session.heure_fin <= models.Session.heure_fin),
+                and_(session.heure_debut <= models.Session.heure_debut, session.heure_fin >= models.Session.heure_fin)
+            )
+        ).first()
+        if conflict_conf:
+            raise HTTPException(status_code=400, detail=f"Conférencier {session.conferencier} déjà occupé sur ce créneau")
+
+    # Si tout est OK, on crée la session
     new_session = models.Session(
         titre=session.titre,
         heure_debut=session.heure_debut,
