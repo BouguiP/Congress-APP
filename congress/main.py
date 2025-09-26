@@ -34,6 +34,10 @@ def read_questions(
 
 @app.post("/questions", response_model=schemas.QuestionResponse)
 def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_db)):
+    # Vérifie que la session_id est fournie
+    if not question.session_id:
+        raise HTTPException(status_code=400, detail="Une session doit être sélectionnée")
+
     # Vérifie que la session existe
     session = db.query(models.Session).filter(models.Session.id == question.session_id).first()
     if not session:
