@@ -1,14 +1,19 @@
+import os
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from congress import models, schemas
 from congress.database import engine
 from congress.dependencies import get_db
+from datetime import datetime
+from fastapi.staticfiles import StaticFiles
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Congress App")
 
+STATIC_DIR = "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Helpers
 def session_to_schema(s: models.Session) -> schemas.SessionResponse:
@@ -138,6 +143,30 @@ def list_sessions(db: Session = Depends(get_db)):
     sessions = db.query(models.Session).all()
     return [session_to_schema(s) for s in sessions]
 
+# --- SESSIONS EN COURS ---
+@app.get("/sessions/current", response_model=list[schemas.SessionResponse])
+def get_current_sessions(db: Session = Depends(get_db)):
+    now = datetime.now()  # pour MVP on reste en naive; plus tard: ZoneInfo("Europe/Paris")
+    rows = (
+        db.query(models.Session)
+        .filter(models.Session.heure_debut <= now, models.Session.heure_fin > now)
+        .all()
+    )
+    return [session_to_schema(s) for s in rows]
+
+# --- PROCHAINE SESSION ---
+@app.get("/sessions/next", response_model=schemas.SessionResponse)
+def get_next_session(db: Session = Depends(get_db)):
+    now = datetime.now()
+    s = (
+        db.query(models.Session)
+        .filter(models.Session.heure_debut > now)
+        .order_by(models.Session.heure_debut.asc())
+        .first()
+    )
+    if not s:
+        raise HTTPException(status_code=404, detail="Aucune session à venir")
+    return session_to_schema(s)
 
 # Questions
 @app.post("/questions", response_model=schemas.QuestionResponse)
@@ -186,3 +215,24 @@ def toggle_status(question_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(q)
     return question_to_schema(q, db)
+
+
+# -------------------------
+# DOCUMENTS (menu, attestation, etc.)
+# -------------------------
+
+# Récupérer un document par clé (ex: "menu", "attestation")
+@app.get("/documents")
+def get_documents():
+    files = os.listdir(STATIC_DIR)  # liste tous les fichiers du dossier
+    documents = []
+
+    for file in files:
+        ext = file.split(".")[-1].lower() if "." in file else "unknown"
+        documents.append({
+            "name": file,
+            "url": f"/static/{file}",
+            "type": ext
+        })
+
+    return documents

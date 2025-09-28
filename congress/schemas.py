@@ -79,3 +79,14 @@ class QuestionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class DocumentUpsert(BaseModel):
+    content: Optional[str] = None
+    file_url: Optional[str] = None
+
+class DocumentResponse(BaseModel):
+    key: str
+    content: Optional[str] = None
+    file_url: Optional[str] = None
+    updated_at: datetime
+    model_config = {"from_attributes": True}

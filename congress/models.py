@@ -51,3 +51,13 @@ class Question(Base):
 
     session_id = Column(Integer, ForeignKey("sessions.id"))
     participant_id = Column(Integer, ForeignKey("participants.id"), nullable=True)
+
+
+class Document(Base):
+    __tablename__ = "documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(50), unique=True, nullable=False, index=True)  # ex: "menu", "attestation"
+    content = Column(Text, nullable=True)         # texte libre (menu, attestation…)
+    file_url = Column(String(500), nullable=True) # lien d'un PDF si besoin
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
