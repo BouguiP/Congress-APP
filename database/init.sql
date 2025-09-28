@@ -18,14 +18,10 @@ BEGIN
 END
 $$;
 
--- Table des sessions
-CREATE TABLE IF NOT EXISTS sessions (
+-- Table des rôles
+CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
-    titre VARCHAR(255) NOT NULL,
-    heure_debut TIMESTAMP NOT NULL,
-    heure_fin TIMESTAMP NOT NULL,
-    conferencier VARCHAR(255),
-    salle VARCHAR(100)
+    nom VARCHAR(50) UNIQUE NOT NULL
 );
 
 -- Table des participants
@@ -35,11 +31,22 @@ CREATE TABLE IF NOT EXISTS participants (
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     profession VARCHAR(255),
-    role VARCHAR(20) DEFAULT 'participant', -- "participant" ou "moderateur"
+    password VARCHAR(255),
+    role_id INT REFERENCES roles(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Création d'une table minimaliste de test
+-- Table des sessions
+CREATE TABLE IF NOT EXISTS sessions (
+    id SERIAL PRIMARY KEY,
+    titre VARCHAR(255) NOT NULL,
+    heure_debut TIMESTAMP NOT NULL,
+    heure_fin TIMESTAMP NOT NULL,
+    conferenciers VARCHAR(255),
+    salle VARCHAR(100)
+);
+
+-- Table des questions
 CREATE TABLE IF NOT EXISTS questions (
     id SERIAL PRIMARY KEY,
     question_text TEXT NOT NULL,
@@ -48,3 +55,11 @@ CREATE TABLE IF NOT EXISTS questions (
     session_id INT REFERENCES sessions(id),
     participant_id INT REFERENCES participants(id)
 );
+
+-- Insertion des rôles de base
+INSERT INTO roles (nom) VALUES ('participant')
+    ON CONFLICT (nom) DO NOTHING;
+INSERT INTO roles (nom) VALUES ('moderateur')
+    ON CONFLICT (nom) DO NOTHING;
+INSERT INTO roles (nom) VALUES ('admin')
+    ON CONFLICT (nom) DO NOTHING;
