@@ -7,6 +7,8 @@ from congress.database import engine
 from congress.dependencies import get_db
 from datetime import datetime
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import select
+from sqlalchemy.orm import aliased
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -14,6 +16,10 @@ app = FastAPI(title="Congress App")
 
 STATIC_DIR = "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+Participant = aliased(models.Participant)
+SessionModel = aliased(models.Session)
+Question = models.Question
 
 # Helpers
 def session_to_schema(s: models.Session) -> schemas.SessionResponse:
@@ -61,12 +67,10 @@ def question_to_schema(q: models.Question, db: Session) -> schemas.QuestionRespo
 @app.get("/roles", response_model=list[schemas.RoleResponse])
 def list_roles(db: Session = Depends(get_db)):
     roles = db.query(models.Role).all()
-    return [schemas.RoleResponse(id=r.id, nom=r.nom) for r in roles]  # corrigé
+    return [schemas.RoleResponse(id=r.id, nom=r.nom) for r in roles]
 
 
 # Participants
-
-@app.post("/participants/register", response_model=schemas.ParticipantResponse)
 @app.post("/participants/register", response_model=schemas.ParticipantResponse)
 def register_participant(payload: schemas.ParticipantCreate, db: Session = Depends(get_db)):
     # Vérifier email unique
@@ -123,19 +127,28 @@ def login(login_data: schemas.LoginRequest, db: Session = Depends(get_db)):
 
     return {"message": "Connexion réussie", "role": user.role.nom if user.role else "unknown"}
 # Sessions
-@app.post("/sessions", response_model=schemas.SessionResponse)
-def create_session(session: schemas.SessionCreate, db: Session = Depends(get_db)):
-    s = models.Session(
-        titre=session.titre,
-        heure_debut=session.heure_debut,
-        heure_fin=session.heure_fin,
-        conferenciers=",".join(session.conferenciers),
-        salle=session.salle
+@app.post("/sessions", response_model=schemas.SessionResponse, status_code=201)
+def create_session(payload: schemas.SessionCreate, db: Session = Depends(get_db)):
+    # 1) début < fin
+    if payload.heure_fin <= payload.heure_debut:
+        raise HTTPException(status_code=400, detail="heure_fin doit être strictement > heure_debut")
+
+    overlapping = db.query(models.Session).filter(
+        models.Session.heure_debut < payload.heure_fin,
+        models.Session.heure_fin > payload.heure_debut
+    ).all()
+
+    obj = models.Session(
+        titre=payload.titre,
+        heure_debut=payload.heure_debut,
+        heure_fin=payload.heure_fin,
+        conferenciers=",".join([s.strip() for s in (payload.conferenciers or [])]),
+        salle=payload.salle,
     )
-    db.add(s)
+    db.add(obj)
     db.commit()
-    db.refresh(s)
-    return session_to_schema(s)
+    db.refresh(obj)
+    return session_to_schema(obj)
 
 
 @app.get("/sessions", response_model=list[schemas.SessionResponse])
@@ -193,16 +206,45 @@ def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_
 
 
 @app.get("/questions", response_model=list[schemas.QuestionResponse])
-def list_questions(session_id: int, status: str | None = None, db: Session = Depends(get_db)):
-    query = db.query(models.Question).filter(models.Question.session_id == session_id)
+def list_questions(
+        session_id: int,
+        status: str | None = None,
+        db: Session = Depends(get_db)
+):
+    # filtre de statut si fourni
+    if status not in (None, "non_repondu", "repondu"):
+        raise HTTPException(status_code=400, detail="Statut invalide")
 
+    stmt = (
+        select(
+            Question,                 # l'objet question
+            SessionModel.titre,       # titre de la session
+            Participant.prenom,       # prénom participant (peut être None)
+            Participant.nom           # nom participant (peut être None)
+        )
+        .join(SessionModel, SessionModel.id == Question.session_id)
+        .outerjoin(Participant, Participant.id == Question.participant_id)
+        .where(Question.session_id == session_id)
+    )
     if status:
-        if status not in ["non_repondu", "repondu"]:
-            raise HTTPException(status_code=400, detail="Statut invalide")
-        query = query.filter(models.Question.status == status)
+        stmt = stmt.where(Question.status == status)
 
-    questions = query.all()
-    return [question_to_schema(q, db) for q in questions]
+    rows = db.execute(stmt).all()
+
+    # on construit la réponse attendue par ton schema QuestionResponse
+    out = []
+    for q, session_titre, p_prenom, p_nom in rows:
+        out.append(
+            schemas.QuestionResponse(
+                id=q.id,
+                question_text=q.question_text,
+                created_at=q.created_at,
+                status=q.status,
+                session=session_titre,
+                participant=(f"{p_prenom} {p_nom}".strip() if p_prenom and p_nom else None)
+            )
+        )
+    return out
 
 
 @app.patch("/questions/{question_id}/toggle", response_model=schemas.QuestionResponse)
