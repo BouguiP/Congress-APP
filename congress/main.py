@@ -9,6 +9,10 @@ from datetime import datetime
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 from sqlalchemy.orm import aliased
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List
+from congress.models import Question, Orateur
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -20,6 +24,15 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 Participant = aliased(models.Participant)
 SessionModel = aliased(models.Session)
 Question = models.Question
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Helpers
 def session_to_schema(s: models.Session) -> schemas.SessionResponse:
@@ -40,7 +53,7 @@ def participant_to_schema(p: models.Participant) -> schemas.ParticipantResponse:
         prenom=p.prenom,
         email=p.email,
         profession=p.profession,
-        role=p.role.nom,  # corrigé
+        role=(p.role.nom if p.role else None),
         created_at=p.created_at
     )
 
@@ -59,7 +72,8 @@ def question_to_schema(q: models.Question, db: Session) -> schemas.QuestionRespo
         created_at=q.created_at,
         status=q.status,
         session=session.titre if session else "Inconnue",
-        participant=participant
+        participant=participant,
+        orateur=(q.orateur.nom if getattr(q, "orateur", None) else None),
     )
 
 
@@ -181,12 +195,25 @@ def get_next_session(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Aucune session à venir")
     return session_to_schema(s)
 
+@app.get("/sessions/{session_id}/orateurs", response_model=List[schemas.OrateurOut])
+def list_orateurs_for_session(session_id: int, db: Session = Depends(get_db)):
+    s = db.query(models.Session).get(session_id)
+    if not s:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return [schemas.OrateurOut.from_orm(o) for o in s.orateurs]
+
 # Questions
 @app.post("/questions", response_model=schemas.QuestionResponse)
 def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_db)):
     session = db.query(models.Session).filter(models.Session.id == question.session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session introuvable")
+
+    if session.orateurs:
+        if question.orateur_id is None:
+            raise HTTPException(422, "orateur_id est requis pour cette session")
+        if not any(o.id == question.orateur_id for o in session.orateurs):
+            raise HTTPException(400, "Cet orateur n'est pas associé à la session")
 
     if question.participant_id:
         participant = db.query(models.Participant).filter(models.Participant.id == question.participant_id).first()
@@ -197,19 +224,30 @@ def create_question(question: schemas.QuestionCreate, db: Session = Depends(get_
         question_text=question.question_text,
         status="non_repondu",
         session_id=question.session_id,
-        participant_id=question.participant_id
+        participant_id=question.participant_id,
+        orateur_id=question.orateur_id
     )
+
     db.add(q)
     db.commit()
     db.refresh(q)
-    return question_to_schema(q, db)
+    return schemas.QuestionResponse(
+        id=q.id,
+        question_text=q.question_text,
+        created_at=q.created_at,
+        status=q.status,
+        session=session.titre,
+        participant=(q.participant.nom if getattr(q, "participant", None) else None),
+        orateur=(q.orateur.nom if getattr(q, "orateur", None) else None),
+    )
 
 
 @app.get("/questions", response_model=list[schemas.QuestionResponse])
 def list_questions(
         session_id: int,
         status: str | None = None,
-        db: Session = Depends(get_db)
+        orateur_id: int | None = None,   # <-- nouveau filtre
+        db: Session = Depends(get_db),
 ):
     # filtre de statut si fourni
     if status not in (None, "non_repondu", "repondu"):
@@ -217,23 +255,35 @@ def list_questions(
 
     stmt = (
         select(
-            Question,                 # l'objet question
-            SessionModel.titre,       # titre de la session
-            Participant.prenom,       # prénom participant (peut être None)
-            Participant.nom           # nom participant (peut être None)
+            Question,                  # l'objet question
+            SessionModel.titre,        # titre de la session
+            Participant.prenom,        # prénom participant (peut être None)
+            Participant.nom,           # nom participant (peut être None)
+            Orateur.nom,               # <-- nom orateur (peut être None)
         )
         .join(SessionModel, SessionModel.id == Question.session_id)
         .outerjoin(Participant, Participant.id == Question.participant_id)
+        .outerjoin(Orateur, Orateur.id == Question.orateur_id)   # <-- jointure orateur
         .where(Question.session_id == session_id)
     )
+
     if status:
         stmt = stmt.where(Question.status == status)
 
+    if orateur_id:
+        stmt = stmt.where(Question.orateur_id == orateur_id)     # <-- filtre orateur
+
+    # tri : par nom d'orateur puis par date de création
+    stmt = stmt.order_by(Orateur.nom.asc(), Question.created_at.asc())
+
     rows = db.execute(stmt).all()
 
-    # on construit la réponse attendue par ton schema QuestionResponse
-    out = []
-    for q, session_titre, p_prenom, p_nom in rows:
+    out: list[schemas.QuestionResponse] = []
+    for q, session_titre, p_prenom, p_nom, orateur_nom in rows:
+        participant = (
+            f"{(p_prenom or '').strip()} {(p_nom or '').strip()}".strip()
+            if (p_prenom or p_nom) else None
+        )
         out.append(
             schemas.QuestionResponse(
                 id=q.id,
@@ -241,7 +291,8 @@ def list_questions(
                 created_at=q.created_at,
                 status=q.status,
                 session=session_titre,
-                participant=(f"{p_prenom} {p_nom}".strip() if p_prenom and p_nom else None)
+                participant=participant,
+                orateur=orateur_nom,   # <-- renvoyé dans la réponse
             )
         )
     return out

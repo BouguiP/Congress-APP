@@ -1,9 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Text, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, Text, DateTime, Table
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy.sql import func
 
 
+
+# --- table d'association many-to-many ---
+session_orateurs = Table(
+    "session_orateurs",
+    Base.metadata,
+    Column("session_id", ForeignKey("sessions.id"), primary_key=True),
+    Column("orateur_id", ForeignKey("orateurs.id"), primary_key=True),
+)
 
 class Role(Base):
     __tablename__ = "roles"
@@ -13,6 +21,12 @@ class Role(Base):
 
     participants = relationship("Participant", back_populates="role")
 
+class Orateur(Base):
+    __tablename__ = "orateurs"
+    id = Column(Integer, primary_key=True, index=True)
+    nom = Column(String(150), nullable=False)
+
+    sessions = relationship("Session", secondary=session_orateurs, back_populates="orateurs")
 
 class Participant(Base):
     __tablename__ = "participants"
@@ -39,6 +53,7 @@ class Session(Base):
     heure_fin = Column(TIMESTAMP, nullable=False)
     conferenciers = Column(Text, nullable=False)  # CSV
     salle = Column(String(100), nullable=False)
+    orateurs = relationship("Orateur", secondary=session_orateurs, back_populates="sessions")
 
 
 class Question(Base):
@@ -52,6 +67,9 @@ class Question(Base):
     session_id = Column(Integer, ForeignKey("sessions.id"))
     participant_id = Column(Integer, ForeignKey("participants.id"), nullable=True)
 
+    orateur_id = Column(Integer, ForeignKey("orateurs.id"), nullable=True)
+    orateur = relationship("Orateur")
+
 
 class Document(Base):
     __tablename__ = "documents"
@@ -61,3 +79,5 @@ class Document(Base):
     content = Column(Text, nullable=True)         # texte libre (menu, attestation…)
     file_url = Column(String(500), nullable=True) # lien d'un PDF si besoin
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+

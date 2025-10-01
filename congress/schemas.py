@@ -3,6 +3,14 @@ from datetime import datetime
 from typing import Optional, List
 
 
+# --- Orateur minimal (sortie) ---
+class OrateurOut(BaseModel):
+    id: int
+    nom: str
+    class Config:
+        from_attributes = True
+
+
 class RoleResponse(BaseModel):
     id: int
     nom: str   # corrigé
@@ -26,7 +34,7 @@ class ParticipantResponse(BaseModel):
     prenom: str
     email: str
     profession: str
-    role: str   # nom du rôle
+    role: Optional[str]   # nom du rôle
     created_at: datetime
 
     class Config:
@@ -67,6 +75,7 @@ class QuestionCreate(BaseModel):
     question_text: str
     session_id: int
     participant_id: Optional[int] = None
+    orateur_id: Optional[int] = None
 
 
 class QuestionResponse(BaseModel):
@@ -76,6 +85,7 @@ class QuestionResponse(BaseModel):
     status: str
     session: str
     participant: Optional[str] = None
+    orateur: Optional[str] = None
 
     class Config:
         from_attributes = True
