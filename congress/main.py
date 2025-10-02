@@ -12,6 +12,8 @@ from sqlalchemy.orm import aliased
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from congress.models import Question, Orateur
+from zoneinfo import ZoneInfo
+
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -173,7 +175,8 @@ def list_sessions(db: Session = Depends(get_db)):
 # --- SESSIONS EN COURS ---
 @app.get("/sessions/current", response_model=list[schemas.SessionResponse])
 def get_current_sessions(db: Session = Depends(get_db)):
-    now = datetime.now()  # pour MVP on reste en naive; plus tard: ZoneInfo("Europe/Paris")
+    paris = ZoneInfo("Europe/Paris")
+    now = datetime.now(paris).replace(tzinfo=None)    # pour MVP on reste en naive; plus tard: ZoneInfo("Europe/Paris")
     rows = (
         db.query(models.Session)
         .filter(models.Session.heure_debut <= now, models.Session.heure_fin > now)
@@ -184,7 +187,9 @@ def get_current_sessions(db: Session = Depends(get_db)):
 # --- PROCHAINE SESSION ---
 @app.get("/sessions/next", response_model=schemas.SessionResponse)
 def get_next_session(db: Session = Depends(get_db)):
-    now = datetime.now()
+    paris = ZoneInfo("Europe/Paris")
+    now = datetime.now(paris).replace(tzinfo=None)
+
     s = (
         db.query(models.Session)
         .filter(models.Session.heure_debut > now)

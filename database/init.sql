@@ -114,28 +114,27 @@ INSERT INTO orateurs (nom) VALUES
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
 ('Session A — IA clinique',
- NOW() - INTERVAL '30 minutes',
- NOW() + INTERVAL '90 minutes',
- 'Dr Alice Dupont,Pr Bob Martin',
- 'A1');
+  timezone('Europe/Paris', now()) - interval '30 minutes',
+  timezone('Europe/Paris', now()) + interval '90 minutes',
+  'Dr Alice Dupont,Pr Bob Martin',
+  'A1');
 
--- À venir (dans 2h, dure 2h)
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
 ('Session B — Données & Santé',
- NOW() + INTERVAL '2 hours',
- NOW() + INTERVAL '4 hours',
- 'Dr Chloé Bernard',
- 'B1');
+  timezone('Europe/Paris', now()) + interval '2 hours',
+  timezone('Europe/Paris', now()) + interval '4 hours',
+  'Dr Chloé Bernard',
+  'B1');
 
--- Passée (terminée il y a ~3h)
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
 ('Session C — Sécurité',
- NOW() - INTERVAL '5 hours',
- NOW() - INTERVAL '3 hours',
- 'Dr Idriss Ben Ali',
- 'C1');
+  timezone('Europe/Paris', now()) - interval '5 hours',
+  timezone('Europe/Paris', now()) - interval '3 hours',
+  'Dr Idriss Ben Ali',
+  'C1');
+
 
 -- (re)tirage : on efface d'abord les liens existants (facultatif)
 TRUNCATE TABLE session_orateurs;
