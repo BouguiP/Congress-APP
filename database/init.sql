@@ -123,7 +123,7 @@ INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
 ('Session B — Données & Santé',
   timezone('Europe/Paris', now()) + interval '2 hours',
-  timezone('Europe/Paris', now()) + interval '4 hours',
+  timezone('Europe/Paris', now()) + interval '5 hours',
   'Dr Chloé Bernard',
   'B1');
 
