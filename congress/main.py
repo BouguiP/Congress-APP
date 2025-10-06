@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from congress import models, schemas
 from congress.database import engine
@@ -15,6 +15,7 @@ from congress.models import Question, Orateur
 from zoneinfo import ZoneInfo
 from datetime import timezone
 import pytz
+from urllib.parse import quote
 
 
 
@@ -89,6 +90,13 @@ def question_to_schema(q: models.Question, db: Session) -> schemas.QuestionRespo
         orateur=(q.orateur.nom if getattr(q, "orateur", None) else None),
     )
 
+def _human_size(n: int) -> str:
+    # n en octets -> libellé
+    for unit in ["B", "KB", "MB", "GB"]:
+        if n < 1024.0 or unit == "GB":
+            return f"{n:.0f} {unit}" if unit != "MB" else f"{n/1024:.1f} MB"
+        n /= 1024.0
+    return f"{n:.0f} B"
 
 # Rôles
 @app.get("/roles", response_model=list[schemas.RoleResponse])
@@ -331,17 +339,17 @@ def toggle_status(question_id: int, db: Session = Depends(get_db)):
 # -------------------------
 
 # Récupérer un document par clé (ex: "menu", "attestation")
-@app.get("/documents")
-def get_documents():
-    files = os.listdir(STATIC_DIR)  # liste tous les fichiers du dossier
-    documents = []
-
-    for file in files:
+@app.get("/documents", response_model=list[schemas.DocItem])
+def get_documents(request: Request):
+    base = str(request.base_url).rstrip("/")  # ex: https://xxxxx.ngrok-free.dev
+    docs = []
+    for file in os.listdir(STATIC_DIR):
+        path = os.path.join(STATIC_DIR, file)
+        if not os.path.isfile(path):
+            continue
         ext = file.split(".")[-1].lower() if "." in file else "unknown"
-        documents.append({
-            "name": file,
-            "url": f"/static/{file}",
-            "type": ext
-        })
-
-    return documents
+        size_label = f"{_human_size(os.path.getsize(path))} • {ext.upper()}"
+        # protéger espaces/caractères spéciaux
+        url = f"{base}/static/{quote(file)}"
+        docs.append({"name": file, "url": url, "type": ext, "size_label": size_label})
+    return docs

@@ -113,27 +113,27 @@ INSERT INTO orateurs (nom) VALUES
 
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
-('Session A — IA clinique',
+('Session A :',
   timezone('Europe/Paris', now()) - interval '30 minutes',
   timezone('Europe/Paris', now()) + interval '90 minutes',
   'Dr Alice Dupont,Pr Bob Martin',
-  'A1');
+  'Salle A1');
 
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
-('Session B — Données & Santé',
+('Session B ',
   timezone('Europe/Paris', now()) + interval '2 hours',
   timezone('Europe/Paris', now()) + interval '5 hours',
   'Dr Chloé Bernard',
-  'B1');
+  'Salle B1');
 
 INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
 VALUES
-('Session C — Sécurité',
+('Session C ',
   timezone('Europe/Paris', now()) - interval '5 hours',
   timezone('Europe/Paris', now()) - interval '3 hours',
   'Dr Idriss Ben Ali',
-  'C1');
+  'Salle C1');
 
 
 -- (re)tirage : on efface d'abord les liens existants (facultatif)

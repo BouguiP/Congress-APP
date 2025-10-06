@@ -102,3 +102,9 @@ class DocumentResponse(BaseModel):
     file_url: Optional[str] = None
     updated_at: datetime
     model_config = {"from_attributes": True}
+
+class DocItem(BaseModel):
+    name: str          # nom du fichier ex: programme.pdf
+    url: str           # URL absolue prêt à ouvrir
+    type: str          # pdf, png, ...
+    size_label: Optional[str] = None
