@@ -66,6 +66,8 @@ class SessionResponse(BaseModel):
     heure_fin: datetime
     conferenciers: List[str]
     salle: str
+    heure_debut_hhmm: Optional[str] = None
+    heure_fin_hhmm: Optional[str] = None
 
     class Config:
         from_attributes = True

@@ -13,6 +13,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from congress.models import Question, Orateur
 from zoneinfo import ZoneInfo
+from datetime import timezone
+import pytz
 
 
 
@@ -20,6 +22,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Congress App")
 
+TZ_PARIS = pytz.timezone("Europe/Paris")
 STATIC_DIR = "static"
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -37,6 +40,12 @@ app.add_middleware(
 )
 
 # Helpers
+def hhmm(dt):
+    if dt is None:
+        return None
+    return dt.astimezone(TZ_PARIS).strftime("%H:%M")
+
+
 def session_to_schema(s: models.Session) -> schemas.SessionResponse:
     return schemas.SessionResponse(
         id=s.id,
@@ -44,7 +53,9 @@ def session_to_schema(s: models.Session) -> schemas.SessionResponse:
         heure_debut=s.heure_debut,
         heure_fin=s.heure_fin,
         conferenciers=[c for c in s.conferenciers.split(",") if c.strip()],
-        salle=s.salle
+        salle=s.salle,
+        heure_debut_hhmm=hhmm(s.heure_debut),
+        heure_fin_hhmm=hhmm(s.heure_fin)
     )
 
 
@@ -176,7 +187,7 @@ def list_sessions(db: Session = Depends(get_db)):
 @app.get("/sessions/current", response_model=list[schemas.SessionResponse])
 def get_current_sessions(db: Session = Depends(get_db)):
     paris = ZoneInfo("Europe/Paris")
-    now = datetime.now(paris).replace(tzinfo=None)    # pour MVP on reste en naive; plus tard: ZoneInfo("Europe/Paris")
+    now = datetime.now(paris).replace(tzinfo=None)
     rows = (
         db.query(models.Session)
         .filter(models.Session.heure_debut <= now, models.Session.heure_fin > now)
