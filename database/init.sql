@@ -150,3 +150,26 @@ CROSS JOIN LATERAL (
   LIMIT 2
 ) o
 ON CONFLICT DO NOTHING;
+
+INSERT INTO participants (nom, prenom, email, profession, role_id, password)
+VALUES (
+    'Modo',          -- Remplacez par le nom
+    'Modo',       -- Remplacez par le prénom
+    'modo@example.com', -- Remplacez par l'email du modérateur
+    'Moderateur',       -- Mettez une profession (champ obligatoire)
+    2,                  -- Remplacez par le mot de passe souhaité (en clair ici)
+    '123'                   -- ID du rôle 'moderateur' (vérifiez si c'est bien 2)
+);
+
+INSERT INTO participants (nom, prenom, email, profession, role_id)
+VALUES (
+    'test',          -- Remplacez par le nom
+    'test',       -- Remplacez par le prénom
+    'test1@example.com', -- Remplacez par l'email du modérateur
+    'test',       -- Mettez une profession (champ obligatoire)
+    1
+
+);
+
+INSERT INTO questions (question_text, session_id, participant_id, orateur_id) values
+('Quelle est la durée de la session A ?', 1, 2, 1);
