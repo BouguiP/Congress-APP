@@ -50,7 +50,6 @@ CREATE TABLE IF NOT EXISTS sessions (
     titre VARCHAR(255) NOT NULL,
     heure_debut TIMESTAMP NOT NULL,
     heure_fin TIMESTAMP NOT NULL,
-    conferenciers TEXT NOT NULL,
     salle VARCHAR(100) NOT NULL
 );
 
@@ -111,28 +110,25 @@ INSERT INTO orateurs (nom) VALUES
 ('Dr Sophie Nguyen'),
 ('Pr Luca Rossi');
 
-INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
+INSERT INTO sessions (titre, heure_debut, heure_fin, salle)
 VALUES
-('Session A :',
+('Session A ',
   timezone('Europe/Paris', now()) - interval '30 minutes',
   timezone('Europe/Paris', now()) + interval '90 minutes',
-  'Dr Alice Dupont,Pr Bob Martin',
   'Salle A1');
 
-INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
+INSERT INTO sessions (titre, heure_debut, heure_fin, salle)
 VALUES
 ('Session B ',
   timezone('Europe/Paris', now()) + interval '2 hours',
   timezone('Europe/Paris', now()) + interval '5 hours',
-  'Dr Chloé Bernard',
   'Salle B1');
 
-INSERT INTO sessions (titre, heure_debut, heure_fin, conferenciers, salle)
+INSERT INTO sessions (titre, heure_debut, heure_fin, salle)
 VALUES
 ('Session C ',
   timezone('Europe/Paris', now()) - interval '5 hours',
   timezone('Europe/Paris', now()) - interval '3 hours',
-  'Dr Idriss Ben Ali',
   'Salle C1');
 
 
@@ -146,6 +142,7 @@ FROM sessions s
 CROSS JOIN LATERAL (
   SELECT id
   FROM orateurs
+  WHERE s.id IS NOT NULL
   ORDER BY random()
   LIMIT 2
 ) o

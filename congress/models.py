@@ -51,7 +51,6 @@ class Session(Base):
     titre = Column(String(255), nullable=False)
     heure_debut = Column(TIMESTAMP, nullable=False)
     heure_fin = Column(TIMESTAMP, nullable=False)
-    conferenciers = Column(Text, nullable=False)  # CSV
     salle = Column(String(100), nullable=False)
     orateurs = relationship("Orateur", secondary=session_orateurs, back_populates="sessions")
 

@@ -55,7 +55,7 @@ class SessionCreate(BaseModel):
     titre: str
     heure_debut: datetime
     heure_fin: datetime
-    conferenciers: List[str]
+    orateur_ids: List[int]
     salle: str
 
 

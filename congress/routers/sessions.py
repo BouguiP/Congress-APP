@@ -31,7 +31,7 @@ def session_to_schema(s: models.Session) -> schemas.SessionResponse:
         titre=s.titre,
         heure_debut=s.heure_debut,
         heure_fin=s.heure_fin,
-        conferenciers=[c for c in s.conferenciers.split(",") if c.strip()],
+        conferenciers=[orateur.nom for orateur in s.orateurs],
         salle=s.salle,
         heure_debut_hhmm=hhmm(s.heure_debut),
         heure_fin_hhmm=hhmm(s.heure_fin)
@@ -51,12 +51,21 @@ def create_session(payload: schemas.SessionCreate, db: Session = Depends(get_db)
         models.Session.heure_fin > payload.heure_debut
     ).all()
 
+    orateurs = []
+    if payload.orateur_ids:
+
+        orateurs = db.query(models.Orateur).filter(models.Orateur.id.in_(payload.orateur_ids)).all()
+
+        if len(orateurs) != len(set(payload.orateur_ids)):
+            raise HTTPException(status_code=400, detail="Un ou plusieurs ID d'orateurs sont invalides")
+
+
     obj = models.Session(
         titre=payload.titre,
         heure_debut=payload.heure_debut,
         heure_fin=payload.heure_fin,
-        conferenciers=",".join([s.strip() for s in (payload.conferenciers or [])]),
         salle=payload.salle,
+        orateurs=orateurs,
     )
     db.add(obj)
     db.commit()
