@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["participants & authentification"]
 )
 
-# --- Helper (Fonction d'aide) ---
+# --- Helper
 def participant_to_schema(p: models.Participant) -> schemas.ParticipantResponse:
     return schemas.ParticipantResponse(
         id=p.id,
