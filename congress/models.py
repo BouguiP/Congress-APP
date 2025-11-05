@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 
 
 
-# --- table d'association many-to-many ---
+
 session_orateurs = Table(
     "session_orateurs",
     Base.metadata,
@@ -74,9 +74,9 @@ class Document(Base):
     __tablename__ = "documents"
 
     id = Column(Integer, primary_key=True, index=True)
-    key = Column(String(50), unique=True, nullable=False, index=True)  # ex: "menu", "attestation"
-    content = Column(Text, nullable=True)         # texte libre (menu, attestation…)
-    file_url = Column(String(500), nullable=True) # lien d'un PDF si besoin
+    key = Column(String(50), unique=True, nullable=False, index=True)
+    content = Column(Text, nullable=True)
+    file_url = Column(String(500), nullable=True)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
 

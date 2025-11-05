@@ -43,7 +43,7 @@ def register_participant(payload: schemas.ParticipantCreate, db: Session = Depen
     if not role:
         raise HTTPException(status_code=400, detail="Rôle invalide")
 
-    # Si rôle moderateur/admin -> mot de passe requis (stockage en clair)
+
     if role.nom in ("moderateur", "admin"):
         if not payload.password:
             raise HTTPException(status_code=400, detail="Mot de passe requis pour ce rôle")

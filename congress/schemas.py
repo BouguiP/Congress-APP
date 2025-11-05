@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 
 
-# --- Orateur minimal (sortie) ---
+
 class OrateurOut(BaseModel):
     id: int
     nom: str
@@ -104,7 +104,7 @@ class DocumentResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 class DocItem(BaseModel):
-    name: str          # nom du fichier ex: programme.pdf
-    url: str           # URL absolue prêt à ouvrir
-    type: str          # pdf, png, ...
+    name: str
+    url: str
+    type: str
     size_label: Optional[str] = None
