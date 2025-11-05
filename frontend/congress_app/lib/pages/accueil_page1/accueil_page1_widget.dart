@@ -10,15 +10,6 @@ import 'package:provider/provider.dart';
 import 'accueil_page1_model.dart';
 export 'accueil_page1_model.dart';
 
-/// je veux une page d'acceuil genrale de l'application, c'est une page avec
-/// une section action rapide pour rediriger vers les page pour poser une
-/// question et la page de document, une section qui montre la session en
-/// cours et une autre section qui montre la prochaine session.
-///
-/// C'est application est pour aide a l'organisation de congres, pas besoin de
-/// mettre trop de couleurs juste quelques emojis si necessaire et des
-/// couleurs simple en accord avec les autres pages, il faut que tous tienne
-/// en une page sans besoin de descendre vers le bas
 class AccueilPage1Widget extends StatefulWidget {
   const AccueilPage1Widget({super.key});
 

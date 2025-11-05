@@ -10,10 +10,7 @@ import 'package:provider/provider.dart';
 import 'register_participant_model.dart';
 export 'register_participant_model.dart';
 
-/// Il faut une page de creation de profil, une sorte de formulaire ou il faut
-/// remplir le nom, prenom, l'email et la profession, il y a aura aussi un
-/// bouton continuer pour passer a la prochaine page, c'ewst comme une page
-/// d'inscription
+
 class RegisterParticipantWidget extends StatefulWidget {
   const RegisterParticipantWidget({super.key});
 

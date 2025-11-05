@@ -9,11 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'documents_model.dart';
 export 'documents_model.dart';
 
-/// Il faut une pages pour recuperer les documents, la page Documents aura une
-/// section documents, dans cette section il y aura pour chaque dicuments le
-/// titre du documents une petite description la taille une petit icone
-/// telecharger a droite et un emojis le representant a gauche, il y aura le
-/// document  programme et menu du diner
 class DocumentsWidget extends StatefulWidget {
   const DocumentsWidget({super.key});
 
