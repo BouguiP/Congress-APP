@@ -12,11 +12,7 @@ import 'package:provider/provider.dart';
 import 'questio_manager_model.dart';
 export 'questio_manager_model.dart';
 
-/// je veux une page qui va afficher des questions qui seront triees par
-/// personnes a qui elle sont destinee, il y aura deux tab questions repondu
-/// et question on repondu, a cote de chaque question il y aura une case a
-/// caucher pour marque que la question a ete repondu
-///
+
 class QuestioManagerWidget extends StatefulWidget {
   const QuestioManagerWidget({super.key});
 
