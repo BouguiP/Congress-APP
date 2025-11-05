@@ -7,9 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'role_select_page_model.dart';
 export 'role_select_page_model.dart';
 
-/// Une page qui va etre au debut de l'application qui va demander la personne
-/// si elle est une participant ou un moderateur, ca sera deux bouton a
-/// choisir
+
 class RoleSelectPageWidget extends StatefulWidget {
   const RoleSelectPageWidget({super.key});
 

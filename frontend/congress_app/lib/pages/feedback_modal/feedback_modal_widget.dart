@@ -5,10 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'feedback_modal_model.dart';
 export 'feedback_modal_model.dart';
 
-/// Je veux un popup message avec une icone anime au centre et le message en
-/// bas, je veux que le popup soit carre avec les bord arondies, un emojie ou
-/// icone au mileu et sans bouton ou interraction
-///
+
 class FeedbackModalWidget extends StatefulWidget {
   const FeedbackModalWidget({
     super.key,

@@ -6,22 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'info_page_model.dart';
 export 'info_page_model.dart';
 
-/// Crée une page InfosPage  avec un grand titre “Informations” et un
-/// sous-titre “Toutes les informations pratiques”, puis une rangée de pills
-/// où seul Général est présent/sélectionné ; en dessous, affiche une liste de
-/// cartes élégantes ) : 1) Lieu du congrès avec un cercle icône “location”,
-/// titre + sous-titre (multiligne) et chevron.
-///
-/// 2) Contact organisateurs avec icône “mail”, titre + sous-titre (email et
-/// téléphone) et chevron; 3) WiFi avec icône “wifi”, titre + sous-titre (SSID
-/// + mot de passe); ajoute un petit bouton “copier” à droite qui fait Copy to
-/// Clipboard des identifiants puis Show Snack Bar (“Identifiants WiFi
-/// copiés”).  Utilise Page State (Strings) pour tous les contenus (adresse,
-/// email, téléphone, SSID, mot de passe, numéros d’urgence) et bind les
-/// textes/actions à ces variables pour qu’ils soient faciles à modifier;
-/// couleurs texte principal #111827, secondaire  pills arrondies avec état
-/// sélectionné bleu doux, éléments accessibles (≥44px), ListView scrollable
-/// et responsive.
 class InfoPageWidget extends StatefulWidget {
   const InfoPageWidget({super.key});
 

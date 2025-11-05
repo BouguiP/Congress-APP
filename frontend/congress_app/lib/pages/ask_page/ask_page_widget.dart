@@ -12,10 +12,6 @@ import 'package:provider/provider.dart';
 import 'ask_page_model.dart';
 export 'ask_page_model.dart';
 
-/// je veux une page avec titre Poser une question, il doit contenir un champ
-/// text pour pouvoir poser la question un bouton pour envoyer la question et
-/// une case a cocher pour envoyer de mainere anonyme, ajoute aussi un
-/// dropdown pour selection l'orateur auquel la question est dirigee
 class AskPageWidget extends StatefulWidget {
   const AskPageWidget({super.key});
 

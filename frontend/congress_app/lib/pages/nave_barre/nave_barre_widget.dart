@@ -7,10 +7,7 @@ import 'package:provider/provider.dart';
 import 'nave_barre_model.dart';
 export 'nave_barre_model.dart';
 
-/// Je veux une barre de navigation qui comporte 5 icone, acceuil, question,
-/// document, information, et un autre question, en dessous de chaque item je
-/// veux un mot que le definie
-///
+
 class NaveBarreWidget extends StatefulWidget {
   const NaveBarreWidget({super.key});
 
