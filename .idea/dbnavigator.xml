@@ -22,12 +22,12 @@
   <component name="DBNavigator.Project.DatabaseBrowserManager">
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
-    <show-object-properties value="true" />
+    <show-object-properties value="false" />
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="87ff7d3f-1029-4194-9e4d-2964dbc6d7a3">
-      <console name="Connection" type="STANDARD" schema="postgres" session="Main" />
+      <console name="Connection" type="STANDARD" schema="postgres" session="Main"><![CDATA[select * from roles]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -39,15 +39,24 @@
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="87ff7d3f-1029-4194-9e4d-2964dbc6d7a3" />
   </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="87ff7d3f-1029-4194-9e4d-2964dbc6d7a3" dataset="public.roles" active-filter-id="" />
+  </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
   </component>
   <component name="DBNavigator.Project.FileConnectionMappingManager">
+    <mapping file-url="file://$PROJECT_DIR$/.idea/queries/Query.sql" connection-id="87ff7d3f-1029-4194-9e4d-2964dbc6d7a3" session-id="MAIN" current-schema="public" />
     <mapping file-url="file://$PROJECT_DIR$/database/init.sql" connection-id="87ff7d3f-1029-4194-9e4d-2964dbc6d7a3" session-id="MAIN" current-schema="public" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
     <filters />
+  </component>
+  <component name="DBNavigator.Project.ScriptExecutionManager" clear-outputs="true">
+    <recently-used-interfaces>
+      <mapping database-type="POSTGRES" interface-id="DEFAULT" />
+    </recently-used-interfaces>
   </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
@@ -57,28 +66,28 @@
           <description value="" />
           <database-type value="POSTGRES" />
           <config-type value="BASIC" />
-          <database-version value="15.14" />
+          <database-version value="17.7" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
           <url-type value="DATABASE" />
-          <host value="localhost" />
-          <port value="5432" />
-          <database value="postgres" />
+          <host value="nozomi.proxy.rlwy.net" />
+          <port value="56380" />
+          <database value="railway" />
           <tns-folder value="" />
           <tns-profile value="" />
           <server-type value="" />
           <protocol value="" />
           <url-parameters />
           <type value="USER_PASSWORD" />
-          <user value="congres_user" />
+          <user value="postgres" />
           <token-type value="" />
           <token-config-file value="" />
           <token-profile value="" />
-          <session-user value="congres_user" />
+          <session-user value="postgres" />
         </database>
         <properties>
-          <auto-commit value="false" />
+          <auto-commit value="true" />
         </properties>
         <ssh-settings>
           <active value="false" />
