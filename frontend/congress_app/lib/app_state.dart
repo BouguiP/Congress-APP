@@ -17,6 +17,9 @@ class FFAppState extends ChangeNotifier {
   Future initializePersistedState() async {
     prefs = await SharedPreferences.getInstance();
     _safeInit(() {
+      _participantId = prefs.getInt('ff_participantId') ?? _participantId;
+    });
+    _safeInit(() {
       _isFirstRun = prefs.getBool('ff_isFirstRun') ?? _isFirstRun;
     });
     _safeInit(() {
@@ -25,9 +28,6 @@ class FFAppState extends ChangeNotifier {
     _safeInit(() {
       _roleParticipantId =
           prefs.getInt('ff_roleParticipantId') ?? _roleParticipantId;
-    });
-    _safeInit(() {
-      _participantId = prefs.getInt('ff_participantId') ?? _participantId;
     });
   }
 
