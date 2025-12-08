@@ -4,6 +4,9 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/congress_app/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/congress_app/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/congress_app/build" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.13 (Application Questions)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
