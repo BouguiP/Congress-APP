@@ -26,6 +26,9 @@ class FFAppState extends ChangeNotifier {
       _roleParticipantId =
           prefs.getInt('ff_roleParticipantId') ?? _roleParticipantId;
     });
+    _safeInit(() {
+      _participantId = prefs.getInt('ff_participantId') ?? _participantId;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -39,6 +42,7 @@ class FFAppState extends ChangeNotifier {
   int get participantId => _participantId;
   set participantId(int value) {
     _participantId = value;
+    prefs.setInt('ff_participantId', value);
   }
 
   bool _sendAnonymously = false;
@@ -66,6 +70,7 @@ class FFAppState extends ChangeNotifier {
   set roleParticipantId(int value) {
     _roleParticipantId = value;
     prefs.setInt('ff_roleParticipantId', value);
+
   }
 
   String _selectedStatus = 'non_repondu';
