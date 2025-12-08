@@ -13,7 +13,7 @@ class ListeSessionsCall {
     return ApiManager.instance.makeApiCall(
       callName: 'Liste Sessions ',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/sessions',
+          'https://congress-app-production.up.railway.app/sessions',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -45,7 +45,7 @@ class CreateQuestionAnonCall {
     return ApiManager.instance.makeApiCall(
       callName: 'CreateQuestionAnon',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/questions',
+          'https://congress-app-production.up.railway.app/questions',
       callType: ApiCallType.POST,
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ class ListOrateursForSessionCall {
     return ApiManager.instance.makeApiCall(
       callName: 'ListOrateursForSession',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/sessions/${sessionId}/orateurs',
+          'https://congress-app-production.up.railway.app/sessions/${sessionId}/orateurs',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -129,7 +129,7 @@ class RegisterParticipantCall {
     return ApiManager.instance.makeApiCall(
       callName: 'RegisterParticipant',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/participants/register',
+          'https://congress-app-production.up.railway.app/participants/register',
       callType: ApiCallType.POST,
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ class CreateQuestionIdentifiedCall {
     return ApiManager.instance.makeApiCall(
       callName: 'CreateQuestionIdentified',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/questions',
+          'https://congress-app-production.up.railway.app/questions',
       callType: ApiCallType.POST,
       headers: {
         'Accept': 'application/json',
@@ -196,7 +196,7 @@ class CurrentSessionsCall {
     return ApiManager.instance.makeApiCall(
       callName: 'CurrentSessions',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/sessions/current',
+          'https://congress-app-production.up.railway.app/sessions/current',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -264,7 +264,7 @@ class NextSessionCall {
     return ApiManager.instance.makeApiCall(
       callName: 'NextSession',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/sessions/next',
+          'https://congress-app-production.up.railway.app/sessions/next',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -328,7 +328,7 @@ class ListDocumentsCall {
     return ApiManager.instance.makeApiCall(
       callName: 'ListDocuments',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/documents',
+          'https://congress-app-production.up.railway.app/documents',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -396,7 +396,7 @@ class LoginModerateurCall {
     return ApiManager.instance.makeApiCall(
       callName: 'LoginModerateur',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/login',
+          'https://congress-app-production.up.railway.app/login',
       callType: ApiCallType.POST,
       headers: {
         'Content-Type': 'application/json',
@@ -430,7 +430,7 @@ class ListQuestionsModerNonReponduCall {
     return ApiManager.instance.makeApiCall(
       callName: 'ListQuestionsModerNonRepondu',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/questions',
+          'https://congress-app-production.up.railway.app/questions',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
@@ -490,7 +490,7 @@ class ToggleQuestionStatusCall {
     return ApiManager.instance.makeApiCall(
       callName: 'ToggleQuestionStatus',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/questions/${questionId}/toggle',
+          'https://congress-app-production.up.railway.app/questions/${questionId}/toggle',
       callType: ApiCallType.PATCH,
       headers: {
         'Accept': 'application/json',
@@ -548,7 +548,7 @@ class ListQuestionsModerReponduCall {
     return ApiManager.instance.makeApiCall(
       callName: 'ListQuestionsModerRepondu',
       apiUrl:
-          'https://eulah-nondisbursable-unconsecutively.ngrok-free.dev/questions',
+          'https://congress-app-production.up.railway.app/questions',
       callType: ApiCallType.GET,
       headers: {
         'Accept': 'application/json',
