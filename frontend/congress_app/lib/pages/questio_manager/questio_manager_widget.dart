@@ -37,7 +37,7 @@ class _QuestioManagerWidgetState extends State<QuestioManagerWidget>
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       FFAppState().selectedStatus = 'non_repondu';
-      FFAppState().selectedSpeakerId = null;
+      FFAppState().selectedSpeakerId = 0;
       safeSetState(() {});
     });
 
@@ -183,14 +183,14 @@ class _QuestioManagerWidgetState extends State<QuestioManagerWidget>
                                           FFAppState().selectedStatus =
                                               'non_repondu';
                                           FFAppState().selectedSpeakerId =
-                                              null;
+                                              0;
                                           safeSetState(() {});
                                         },
                                         () async {
                                           FFAppState().selectedStatus =
                                               'repondu';
                                           FFAppState().selectedSpeakerId =
-                                              null;
+                                              0;
                                           safeSetState(() {});
                                         }
                                       ][i]();
